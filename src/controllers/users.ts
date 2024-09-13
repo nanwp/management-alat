@@ -26,6 +26,13 @@ const userController = (app: Elysia) =>
                 return user;
             }
         )
+        app.put(
+            "/:id",
+            async (ctx) => {
+                const user = await service.users.update(ctx.params.id, ctx.body);
+                return user;
+            }
+        )
 
         return app;
     })

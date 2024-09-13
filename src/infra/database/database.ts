@@ -16,9 +16,7 @@ const client = new Client({
 export const connectDatabase = async () => {
     try {
         await client.connect();
-        console.log("Database connected");
     } catch (error) {
-        console.log(process.env.DB_HOST);
         console.error("Error connecting to the database", error);
     }
 }

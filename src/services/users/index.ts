@@ -1,5 +1,5 @@
 import { NotFoundError } from "elysia";
-import { create, getAll, getById } from "./repository"
+import { create, getAll, getById, update } from "./repository"
 import { createSuccessResponse } from "../../utils/response";
 import { hashPassword } from "../../utils/hash";
 import { PaginationRequest } from "../../utils/pagination";
@@ -43,5 +43,17 @@ export const users = {
         const createdUser = await create(newUser);
 
         return createSuccessResponse(createdUser);
+    },
+
+    update: async (id: string, user: any) => {
+        // validate user input
+        if (!user.name || !user.email) {
+            throw new Error("Name and email are required");
+        }
+
+        const updatedUser = await update(id, user);
+
+        return createSuccessResponse(updatedUser);
     }
+
 }

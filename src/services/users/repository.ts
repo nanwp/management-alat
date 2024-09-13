@@ -20,7 +20,7 @@ export const getAll = async (pagination: PaginationRequest): Promise<GetAllUsers
 
         const dataQuery = `
             SELECT id, name, email FROM users
-            ${whereClause}
+            ${whereClause} ORDER BY id ASC
             LIMIT $${queryParams.length + 1} OFFSET $${queryParams.length + 2}
         `;
         queryParams.push(limit, offset);
@@ -32,9 +32,6 @@ export const getAll = async (pagination: PaginationRequest): Promise<GetAllUsers
         `;
         const totalResult = await queryDatabase(totalQuery, queryParams.slice(0, queryParams.length - 2)) as { count: string }[];
         const total = parseInt(totalResult[0].count, 10);
-
-        console.log(queryParams);
-        
 
         return {
             data: users,
@@ -71,6 +68,19 @@ export const create = async (user: UserInput) : Promise<User> => {
         const newUser = await queryDatabase(query, [user.name, user.email, user.password]) as User[];
 
         return newUser[0];
+    } catch (error) {
+        throw new InternalServerError(handleError(error));
+    }
+}
+
+export const update = async (id: string, user: UserInput) : Promise<User> => {
+    try {
+        const query = `
+            UPDATE users SET name = $1, email = $2 WHERE id = $3 AND deleted_at IS NULL RETURNING name, email
+        `;
+        const updatedUser = await queryDatabase(query, [user.name, user.email, id]) as User[];
+
+        return updatedUser[0];
     } catch (error) {
         throw new InternalServerError(handleError(error));
     }
